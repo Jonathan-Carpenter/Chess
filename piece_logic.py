@@ -20,6 +20,10 @@ class Piece:
         moves = []
         movements = self.movements.copy()
 
+        if self.name["w"] == "♙":
+            for move in self.takes:
+                if self.is_valid_move(move, is_take=True)[0]: moves.append(move)
+
         if not self.is_bounded:
             max_mult = self.board.size
         else:
@@ -39,11 +43,11 @@ class Piece:
         return moves
 
     # return type signifies (can I move there?, can I keep moving in that direction?)
-    def is_valid_move(self, move) -> (bool, bool):
+    def is_valid_move(self, move, is_take=False) -> (bool, bool):
         if move == [0,0]: return (False, False)
 
         new_location = [move[0] + self.location[0], move[1] + self.location[1]]
-        valid = (True, True)
+        valid = (not is_take, not is_take)
 
         # Can't move off the board
         if (new_location[0] >= self.board.size or new_location[0] < 0
@@ -116,8 +120,12 @@ class Pawn(Piece):
     def __init__(self, board, cell, colour, location):
         self.name = {"w": "♙", "b": "♟"}
 
-        if location[0] < 2: self.movements = [[1,0], [2,0]]
-        else: self.movements = [[-1,0], [-2,0]]
+        if location[0] < 2:
+            self.movements = [[1,0], [2,0]]
+            self.takes = [[1,1], [1,-1]]
+        else:
+            self.movements = [[-1,0], [-2,0]]
+            self.takes = [[-1,1], [-1,-1]]
 
         self.is_bounded = True
         self.can_jump = False

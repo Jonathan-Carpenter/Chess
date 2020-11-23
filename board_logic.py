@@ -100,6 +100,7 @@ class Board:
 
     def move_handler(self, cell):
         # print("Move piece at {} to {}".format(self.active_piece.location, cell.location))
+        if self.active_piece.name["w"] == "♙" and len(self.active_piece.movements)>1: del self.active_piece.movements[1]
 
         cell.piece = self.active_piece.cell.piece
         cell.update_entry()
