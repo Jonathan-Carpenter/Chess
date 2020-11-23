@@ -9,14 +9,20 @@ class Cell:
 
     def __str__(self):
         if self.piece == None: return ""
-        else: return self.piece.colour + self.piece.name
+        else: return self.piece.name[self.piece.colour]
+
+    def update_entry(self):
+        self.widget["text"] = str(self)
+        self.widget.update()
 
 class Board:
-    def __init__(self, master, size, cell_size=3, font_size=16, w_square_colour="sandy brown", b_square_colour="saddle brown"):
+    def __init__(self, master, size, cell_size=1, font_size=50, font_name="Helvetica", active_colour="gray80", w_square_colour="sandy brown", b_square_colour="saddle brown"):
         self.master = master
         self.size = size
         self.cell_size = cell_size
         self.font_size = font_size
+        self.font_name = font_name
+        self.active_colour = active_colour
         self.w_square_colour = w_square_colour
         self.b_square_colour = b_square_colour
         self.active_piece = None
@@ -42,7 +48,8 @@ class Board:
 
         cell.widget = tk.Label(self.master, text=str(cell),
             width=self.cell_size*2, height=self.cell_size,
-            font=("Helvetica", self.font_size), background=bg)
+            font=(self.font_name, self.font_size),
+            background=bg)
         cell.widget.grid(row=r, column=c)
         cell.widget.bind("<Button-1>", lambda e: self.click_handler(cell))
 
@@ -55,13 +62,13 @@ class Board:
                 else: colour = "w"
 
                 if r == 0 or r == self.size-1:
-                    if c == 0 or c == self.size-1: cell.piece = Rook(self, colour, [r,c])
-                    elif c == 1 or c == self.size-2: cell.piece = Knight(self, colour, [r,c])
-                    elif c == 2 or c == self.size-3: cell.piece = Bishop(self, colour, [r,c])
-                    elif c == 3: cell.piece = King(self, colour, [r,c])
-                    elif c == 4: cell.piece = Queen(self, colour, [r,c])
+                    if c == 0 or c == self.size-1: cell.piece = Rook(self, cell, colour, [r,c])
+                    elif c == 1 or c == self.size-2: cell.piece = Knight(self, cell, colour, [r,c])
+                    elif c == 2 or c == self.size-3: cell.piece = Bishop(self, cell, colour, [r,c])
+                    elif c == 3: cell.piece = King(self, cell, colour, [r,c])
+                    elif c == 4: cell.piece = Queen(self, cell, colour, [r,c])
                 elif r == 1 or r == self.size-2:
-                    cell.piece = Pawn(self, colour, [r,c])
+                    cell.piece = Pawn(self, cell, colour, [r,c])
 
                 cell.widget["text"] = str(cell)
 
@@ -72,15 +79,36 @@ class Board:
 
         elif self.active_piece == None:
             self.active_piece = cell.piece
+            cell.orig_colour = cell.widget["bg"]
+            cell.widget["bg"] = self.active_colour
 
-            print("\nActive piece is now {}.".format(str(self.active_piece)))
+            # print("\nActive piece is now {}.".format(str(self.active_piece)))
 
             moves = cell.piece.get_moves()
             self.valid_cells = []
             for move in moves:
                 self.valid_cells.append([move[0] + cell.location[0], move[1] + cell.location[1]])
 
-            print("Valid cells to move to: {}.".format(self.valid_cells))
+            # print("Valid cells to move to: {}.".format(self.valid_cells))
 
         elif cell.location not in self.valid_cells:
+            self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
             self.active_piece = None
+
+        else:
+            self.move_handler(cell)
+
+    def move_handler(self, cell):
+        # print("Move piece at {} to {}".format(self.active_piece.location, cell.location))
+
+        cell.piece = self.active_piece.cell.piece
+        cell.update_entry()
+
+        self.active_piece.cell.piece = None
+        self.active_piece.cell.update_entry()
+        self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
+
+        self.active_piece.cell = cell
+        self.active_piece.location = cell.location
+
+        self.active_piece = None
