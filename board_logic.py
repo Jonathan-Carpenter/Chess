@@ -30,6 +30,7 @@ class Board:
         self.b_square_colour = b_square_colour
         self.active_piece = None
         self.active_player = "w"
+        self.kings = {"w": None, "b": None}
         self.init_cells()
         self.init_pieces()
 
@@ -70,7 +71,9 @@ class Board:
                     if c == 0 or c == self.size-1: cell.piece = Rook(self, cell, colour, [r,c])
                     elif c == 1 or c == self.size-2: cell.piece = Knight(self, cell, colour, [r,c])
                     elif c == 2 or c == self.size-3: cell.piece = Bishop(self, cell, colour, [r,c])
-                    elif c == 3: cell.piece = King(self, cell, colour, [r,c])
+                    elif c == 3:
+                        cell.piece = King(self, cell, colour, [r,c])
+                        self.kings[colour] = cell.piece
                     elif c == 4: cell.piece = Queen(self, cell, colour, [r,c])
                 elif r == 1 or r == self.size-2:
                     cell.piece = Pawn(self, cell, colour, [r,c])
@@ -108,13 +111,13 @@ class Board:
             self.move_handler(cell)
             self.paint_valid_locations(orig=True)
 
-        if self.active_piece != None:
-            threatened = self.active_piece.is_threatened()
-            if threatened[0]:
-                print("This piece is threatened by the pieces at {}.".format(threatened[1]))
-            else:
-                # print("This piece is not threatened.")
-                pass
+        # if self.active_piece != None:
+        #     threatened = self.active_piece.is_threatened()
+        #     if threatened[0]:
+        #         print("This piece is threatened by the pieces at {}.".format(threatened[1]))
+        #     else:
+        #         print("This piece is not threatened.")
+        #         pass
 
     def paint_valid_locations(self, text=None, orig=False):
         for cell in self.valid_locations:
@@ -123,18 +126,16 @@ class Board:
             if self.cells[r][c].piece == None: self.cells[r][c].widget["text"] = text
 
     def move_handler(self, cell):
-        # print("Move piece at {} to {}".format(self.active_piece.location, cell.location))
-        if self.active_piece.name["w"] == "♙" and len(self.active_piece.movements)>1: del self.active_piece.movements[1]
+        # TODO: when castling implemented --> you can't castle out of check
 
-        cell.piece = self.active_piece.cell.piece
-        cell.update_entry()
+        old_cell = self.active_piece.cell
+        self.active_piece.move(cell)
 
-        self.active_piece.cell.piece = None
-        self.active_piece.cell.update_entry()
-        self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
-
-        self.active_piece.cell = cell
-        self.active_piece.location = cell.location
+        if self.in_check(self.active_player):
+            self.active_piece.move(old_cell)
+            print("You can't make a move that puts your king in check!")
+            self.active_piece = None
+            return
 
         self.active_piece = None
 
@@ -142,3 +143,6 @@ class Board:
             self.active_player = "b"
         else:
             self.active_player = "w"
+
+    def in_check(self, player):
+        return self.kings[player].is_threatened()[0]
