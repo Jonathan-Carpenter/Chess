@@ -37,6 +37,9 @@ class Board:
         self.active_player = "w"
         self.kings = {"w": None, "b": None}
 
+        self.move_history = []
+        self.move_future = []
+
         self.init_cells()
         self.init_pieces()
 
@@ -134,6 +137,7 @@ class Board:
         # TODO: when castling implemented --> you can't castle out of check
 
         old_cell = self.active_piece.cell
+        taken_piece = cell.piece
         self.active_piece.move(cell)
 
         # If the move put the player in check, undo and abort
@@ -144,13 +148,13 @@ class Board:
             self.active_piece = None
             return
 
+        self.move_history.append([[self.active_piece, old_cell]])
+        if taken_piece != None: self.move_history[-1].append([taken_piece, cell])
+        self.move_future = []
         self.active_piece = None
 
         # If the move went ahead, switch players
-        if self.active_player == "w":
-            self.active_player = "b"
-        else:
-            self.active_player = "w"
+        self.switch_players()
 
         # If the new player is in check, then test if they are in checkmate
         if self.in_check(self.active_player, draw=True) and self.checkmate(self.active_player):
@@ -191,7 +195,42 @@ class Board:
 
                     # Reset piece at destination, and return false if move removed check
                     self.cells[move[0]][move[1]].piece = dest_piece
-                    if not checkmated: return False
+                    if not checkmated:
+                        return False
 
         self.kings[player].cell.widget["bg"] = self.checkmate_colour
         return True
+
+    def undo_move(self):
+        if self.move_history == []:
+            return
+
+        moves = self.move_history.pop()
+        self.move_future.append([])
+        for move in moves:
+            self.move_future[-1].append([move[0], move[0].cell])
+            move[0].move(move[1])
+
+        self.in_check(self.active_player, draw=True)
+        self.switch_players()
+        self.in_check(self.active_player, draw=True)
+
+    def redo_move(self):
+        if self.move_future == []:
+            return
+
+        moves = self.move_future.pop()
+        self.move_history.append([])
+        for move in moves:
+            self.move_history[-1].append([move[0], move[0].cell])
+        moves[0][0].move(moves[0][1])
+
+        self.in_check(self.active_player, draw=True)
+        self.switch_players()
+        self.in_check(self.active_player, draw=True)
+
+    def switch_players(self):
+        if self.active_player == "w":
+            self.active_player = "b"
+        else:
+            self.active_player = "w"

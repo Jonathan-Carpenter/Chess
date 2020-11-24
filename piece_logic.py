@@ -15,14 +15,14 @@ class Piece:
         return self.name[self.colour]
 
     def move(self, cell, draw=True):
-        # set piece of destination, and print
-        cell.piece = self
-        if draw: cell.update_entry()
-
         # remove piece from current cell, and print
         self.cell.piece = None
         if draw: self.cell.update_entry()
         if draw: self.cell.widget["bg"] = self.cell.orig_colour
+
+        # set piece of destination, and print
+        cell.piece = self
+        if draw: cell.update_entry()
 
         # update cell and location attributes to destination
         self.cell = cell
@@ -141,23 +141,25 @@ class Queen(Piece):
 class Pawn(Piece):
     def __init__(self, board, cell, colour, location):
         self.name = {"w": "♙", "b": "♟"}
+        self.orig_location = location
 
         if location[0] < 2:
-            self.movements = [[1,0], [2,0]]
+            self.orig_movements = [[1,0], [2,0]]
             self.takes = [[1,1], [1,-1]]
         else:
-            self.movements = [[-1,0], [-2,0]]
+            self.orig_movements = [[-1,0], [-2,0]]
             self.takes = [[-1,1], [-1,-1]]
+
+        self.movements = self.orig_movements
 
         self.is_bounded = True
         self.can_jump = False
         super().__init__(board, cell, self.name, colour, location, self.movements, self.is_bounded, self.can_jump)
 
-    def move(self, cell, draw=True):
-        if len(self.movements)>1: del self.movements[1]
-        super().move(cell, draw)
-
     def get_moves(self):
+        if self.location == self.orig_location: self.movements = self.orig_movements
+        else: self.movements = [self.orig_movements[0]]
+
         r, c = self.location[0], self.location[1]
 
         moves = []
