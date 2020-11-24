@@ -135,7 +135,7 @@ class Board:
         self.active_piece.move(cell)
 
         # If the move put the player in check, undo and abort
-        if self.in_check(self.active_player):
+        if self.in_check(self.active_player, draw=True):
             self.active_piece.move(old_cell)
             print("You can't make a move that puts your king in check!")
             self.active_piece = None
@@ -150,15 +150,22 @@ class Board:
             self.active_player = "w"
 
         # If the new player is in check, then test if they are in checkmate
-        if self.in_check(self.active_player) and self.checkmate(self.active_player):
+        if self.in_check(self.active_player, draw=True) and self.checkmate(self.active_player):
             if self.active_player == "w": win_msg = "Black "
             else: win_msg = "White "
             win_msg += "wins by checkmate!"
             print(win_msg)
             self.active_player = None
 
-    def in_check(self, player):
-        return self.kings[player].is_threatened()[0]
+    def in_check(self, player, draw=False):
+        check = self.kings[player].is_threatened()[0]
+        if draw:
+            print(self.kings[player].location)
+            if check:
+                self.kings[player].cell.widget["bg"] = self.check_colour
+            else:
+                self.kings[player].cell.widget["bg"] = self.kings[player].cell.orig_colour
+        return check
 
     def checkmate(self, player):
         checkmated = True
@@ -183,4 +190,6 @@ class Board:
                     # Reset piece at destination, and return false if move removed check
                     self.cells[move[0]][move[1]].piece = dest_piece
                     if not checkmated: return False
+
+        self.kings[player].cell.widget["bg"] = self.checkmate_colour
         return True
