@@ -160,7 +160,6 @@ class Board:
     def in_check(self, player, draw=False):
         check = self.kings[player].is_threatened()[0]
         if draw:
-            print(self.kings[player].location)
             if check:
                 self.kings[player].cell.widget["bg"] = self.check_colour
             else:
