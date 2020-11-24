@@ -11,8 +11,8 @@ args = parser.parse_args()
 
 root = tk.Tk()
 board = Board(root, size=8)
-root.bind("z", lambda e: board.undo_move())
-root.bind("y", lambda e: board.redo_move())
+root.bind("z", lambda e: board.unredo_move(mode="undo"))
+root.bind("y", lambda e: board.unredo_move(mode="redo"))
 if args.setup != "play":
     setup_tools.setup_locations(board, setup_tools.setups[args.setup])
 root.mainloop()

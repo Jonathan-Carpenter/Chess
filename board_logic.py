@@ -201,29 +201,20 @@ class Board:
         self.kings[player].cell.widget["bg"] = self.checkmate_colour
         return True
 
-    def undo_move(self):
-        if self.move_history == []:
+    def unredo_move(self, mode):
+        if mode == "undo":
+            pop_from, push_to = self.move_history, self.move_future
+        elif mode == "redo":
+            pop_from, push_to = self.move_future, self.move_history
+
+        if self.active_player == None or pop_from == []:
             return
 
-        moves = self.move_history.pop()
-        self.move_future.append([])
-        for move in moves:
-            self.move_future[-1].append([move[0], move[0].cell])
-            move[0].move(move[1])
-
-        self.in_check(self.active_player, draw=True)
-        self.switch_players()
-        self.in_check(self.active_player, draw=True)
-
-    def redo_move(self):
-        if self.move_future == []:
-            return
-
-        moves = self.move_future.pop()
-        self.move_history.append([])
-        for move in moves:
-            self.move_history[-1].append([move[0], move[0].cell])
-        moves[0][0].move(moves[0][1])
+        moves = pop_from.pop()
+        push_to.append([])
+        for i, move in enumerate(moves):
+            push_to[-1].append([move[0], move[0].cell])
+            if mode != "redo" or i == 0: move[0].move(move[1])
 
         self.in_check(self.active_player, draw=True)
         self.switch_players()
