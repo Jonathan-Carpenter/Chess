@@ -64,6 +64,7 @@ class Board:
         cell.widget.grid(row=r, column=c)
         cell.widget.bind("<Button-1>", lambda e: self.click_handler(cell))
         cell.orig_colour = bg
+        cell.prev_colour = bg
 
     def init_pieces(self):
         for r in range(self.size):
@@ -97,7 +98,8 @@ class Board:
         # Also show possible moves, and change colour of current cell.
         if self.active_piece == None:
             self.active_piece = cell.piece
-            cell.orig_colour = cell.widget["bg"]
+            if cell.orig_colour == None: cell.orig_colour = cell.widget["bg"]
+            cell.prev_colour = cell.widget["bg"]
             cell.widget["bg"] = self.active_colour
 
             moves = cell.piece.get_moves()
@@ -110,7 +112,7 @@ class Board:
         # If there is an active piece, but we do not click a valid location,
         # do nothing but clear up the UI, and forget the active piece.
         elif cell.location not in self.valid_locations:
-            self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
+            self.active_piece.cell.widget["bg"] = self.active_piece.cell.prev_colour
             self.active_piece = None
             self.paint_valid_locations(orig=True)
 
@@ -137,6 +139,7 @@ class Board:
         # If the move put the player in check, undo and abort
         if self.in_check(self.active_player, draw=True):
             self.active_piece.move(old_cell)
+            self.active_piece.cell["bg"] = self.active_piece.cell.prev_colour
             print("You can't make a move that puts your king in check!")
             self.active_piece = None
             return
