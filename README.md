@@ -5,5 +5,5 @@ Chess game for two human players. Basic move checking and turns have been implem
 TODO:
 - Extend UI so that valid moves are highlighted when a piece is selected -- DONE
 - Implement en passant and castling
-- Implement check (DONE) and checkmate, incl. can't move into check
+- Implement check (DONE) and checkmate (DONE), incl. can't move into check
 - Design AI opponent

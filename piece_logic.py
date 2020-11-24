@@ -14,15 +14,15 @@ class Piece:
     def __str__(self):
         return self.name[self.colour]
 
-    def move(self, cell):
+    def move(self, cell, draw=True):
         # set piece of destination, and print
         cell.piece = self
-        cell.update_entry()
+        if draw: cell.update_entry()
 
         # remove piece from current cell, and print
         self.cell.piece = None
-        self.cell.update_entry()
-        self.cell.widget["bg"] = self.cell.orig_colour
+        if draw: self.cell.update_entry()
+        if draw: self.cell.widget["bg"] = self.cell.orig_colour
 
         # update cell and location attributes to destination
         self.cell = cell
@@ -80,10 +80,10 @@ class Piece:
         if (new_location[0] >= self.board.size or new_location[0] < 0
          or new_location[1] >= self.board.size or new_location[1] < 0):
             valid = (False, False)
-        # Can't move onto our own piece
         else:
             target_piece = self.board.cells[new_location[0]][new_location[1]].piece
             if target_piece != None:
+                # Can't move onto our own piece
                  if target_piece.colour == self.colour: valid = (False, False)
                  else: valid = (True, False)
 
@@ -153,9 +153,9 @@ class Pawn(Piece):
         self.can_jump = False
         super().__init__(board, cell, self.name, colour, location, self.movements, self.is_bounded, self.can_jump)
 
-    def move(self, cell):
+    def move(self, cell, draw=True):
         if len(self.movements)>1: del self.movements[1]
-        super().move(cell)
+        super().move(cell, draw)
 
     def get_moves(self):
         r, c = self.location[0], self.location[1]
