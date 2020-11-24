@@ -21,6 +21,10 @@ class Piece:
         movements = self.movements.copy()
 
         if self.name["w"] == "♙":
+            if self.board.cells[r+1][c].piece != None and [1,0] in movements:
+                movements.remove([1,0])
+            elif self.board.cells[r-1][c].piece != None and [-1,0] in movements:
+                movements.remove([-1,0])
             for move in self.takes:
                 if self.is_valid_move(move, is_take=True)[0]: moves.append(move)
 

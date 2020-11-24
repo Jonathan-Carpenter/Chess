@@ -26,6 +26,7 @@ class Board:
         self.w_square_colour = w_square_colour
         self.b_square_colour = b_square_colour
         self.active_piece = None
+        self.active_player = "w"
         self.init_cells()
         self.init_pieces()
 
@@ -74,10 +75,11 @@ class Board:
 
     def click_handler(self, cell):
         # print("\nClicked on cell {}".format(cell.location))
-        if self.active_piece == None and cell.piece == None:
+        if self.active_piece == None and (cell.piece == None
+                or cell.piece.colour != self.active_player):
             return
 
-        elif self.active_piece == None:
+        if self.active_piece == None:
             self.active_piece = cell.piece
             cell.orig_colour = cell.widget["bg"]
             cell.widget["bg"] = self.active_colour
@@ -113,3 +115,8 @@ class Board:
         self.active_piece.location = cell.location
 
         self.active_piece = None
+
+        if self.active_player == "w":
+            self.active_player = "b"
+        else:
+            self.active_player = "w"
