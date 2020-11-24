@@ -16,12 +16,15 @@ class Cell:
         self.widget.update()
 
 class Board:
-    def __init__(self, master, size, cell_size=1, font_size=50, font_name="Helvetica", active_colour="gray80", w_square_colour="sandy brown", b_square_colour="saddle brown"):
+    def __init__(self, master, size, cell_size=1, font_size=50,
+            font_name="Helvetica", valid_text="·", active_colour="gray80",
+            w_square_colour="sandy brown", b_square_colour="saddle brown"):
         self.master = master
         self.size = size
         self.cell_size = cell_size
         self.font_size = font_size
         self.font_name = font_name
+        self.valid_text = valid_text
         self.active_colour = active_colour
         self.w_square_colour = w_square_colour
         self.b_square_colour = b_square_colour
@@ -53,6 +56,7 @@ class Board:
             background=bg)
         cell.widget.grid(row=r, column=c)
         cell.widget.bind("<Button-1>", lambda e: self.click_handler(cell))
+        cell.orig_colour = bg
 
     def init_pieces(self):
         for r in range(self.size):
@@ -91,14 +95,24 @@ class Board:
             for move in moves:
                 self.valid_cells.append([move[0] + cell.location[0], move[1] + cell.location[1]])
 
+            self.paint_valid_cells(self.valid_text)
+
             # print("Valid cells to move to: {}.".format(self.valid_cells))
 
         elif cell.location not in self.valid_cells:
             self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
             self.active_piece = None
+            self.paint_valid_cells(orig=True)
 
         else:
             self.move_handler(cell)
+            self.paint_valid_cells(orig=True)
+
+    def paint_valid_cells(self, text=None, orig=False):
+        for cell in self.valid_cells:
+            r, c = cell[0], cell[1]
+            if orig: text = ""
+            if self.cells[r][c].piece == None: self.cells[r][c].widget["text"] = text
 
     def move_handler(self, cell):
         # print("Move piece at {} to {}".format(self.active_piece.location, cell.location))
