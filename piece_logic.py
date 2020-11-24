@@ -14,6 +14,22 @@ class Piece:
     def __str__(self):
         return self.name[self.colour]
 
+    def is_threatened(self):
+        threatened = False
+        threats = []
+
+        for row in self.board.cells:
+            for cell in row:
+                if cell.piece == None: continue
+                if cell.piece.colour != self.colour:
+                    enemy_moves = cell.piece.get_moves()
+                    for move in enemy_moves:
+                        location = [cell.location[0]+move[0], cell.location[1]+move[1]]
+                        if location == self.location:
+                            threatened = True
+                            threats.append(cell.location)
+        return (threatened, threats)
+
     def get_moves(self):
         r, c = self.location[0], self.location[1]
 

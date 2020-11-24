@@ -91,25 +91,33 @@ class Board:
             # print("\nActive piece is now {}.".format(str(self.active_piece)))
 
             moves = cell.piece.get_moves()
-            self.valid_cells = []
+            self.valid_locations = []
             for move in moves:
-                self.valid_cells.append([move[0] + cell.location[0], move[1] + cell.location[1]])
+                self.valid_locations.append([move[0] + cell.location[0], move[1] + cell.location[1]])
 
-            self.paint_valid_cells(self.valid_text)
+            self.paint_valid_locations(self.valid_text)
 
-            # print("Valid cells to move to: {}.".format(self.valid_cells))
+            # print("Valid cells to move to: {}.".format(self.valid_locations))
 
-        elif cell.location not in self.valid_cells:
+        elif cell.location not in self.valid_locations:
             self.active_piece.cell.widget["bg"] = self.active_piece.cell.orig_colour
             self.active_piece = None
-            self.paint_valid_cells(orig=True)
+            self.paint_valid_locations(orig=True)
 
         else:
             self.move_handler(cell)
-            self.paint_valid_cells(orig=True)
+            self.paint_valid_locations(orig=True)
 
-    def paint_valid_cells(self, text=None, orig=False):
-        for cell in self.valid_cells:
+        if self.active_piece != None:
+            threatened = self.active_piece.is_threatened()
+            if threatened[0]:
+                print("This piece is threatened by the pieces at {}.".format(threatened[1]))
+            else:
+                # print("This piece is not threatened.")
+                pass
+
+    def paint_valid_locations(self, text=None, orig=False):
+        for cell in self.valid_locations:
             r, c = cell[0], cell[1]
             if orig: text = ""
             if self.cells[r][c].piece == None: self.cells[r][c].widget["text"] = text
