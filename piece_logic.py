@@ -198,21 +198,47 @@ class Pawn(Piece):
         moves = []
         movements = self.movements.copy()
 
+        # Can't move onto piece in front
         if r == self.board.size-1 or (self.board.cells[r+1][c].piece != None and [1,0] in movements):
             movements.remove([1,0])
         elif r == 0 or (self.board.cells[r-1][c].piece != None and [-1,0] in movements):
             movements.remove([-1,0])
+        # Diagonals are valid if there is a piece there
         for move in self.takes:
             if self.is_valid_move(move, is_take=True)[0]: moves.append(move)
+
+        # En-passant
+        # If the latest move was a pawn moving 2 squares, then they can be taken en passant
+        # (According to chess rules, the opportunity to take en passant only lasts one turn)
+        move_hist = self.board.move_history
+        if move_hist != []:
+            last_piece = move_hist[-1][0][0]
+            lp_old_cell = move_hist[-1][0][1]
+            if last_piece.name["w"] == "♙" and abs(last_piece.location[0] - lp_old_cell.location[0]) == 2:
+                if last_piece.location == [self.location[0], self.location[1] + 1]:
+                    moves.append(self.takes[0])
+                elif last_piece.location == [self.location[0], self.location[1] - 1]:
+                    moves.append(self.takes[1])
 
         super().get_moves(moves, movements)
         return moves
 
     def move(self, cell, draw=True, unredo=False):
+        taken_piece = cell.piece
+        move_made = [cell.location[0] - self.location[0], cell.location[1] - self.location[1]]
+
+        # If move is called by unredo and en passent, then update board
+        # If move is called by move handler, then this happens there as move history also needs to be updated
+        if taken_piece == None and move_made in self.takes and unredo:
+            taken_piece = self.board.cells[cell.location[0] - self.orig_movements[0][0]][cell.location[1]].piece
+            taken_piece.cell.piece = None
+            taken_piece.cell.update_entry()
+
         super().move(cell, draw)
         piece_names = {'1': "bishop", '2': "knight", '3': "rook", '4': "queen"}
         piece_id = 0
 
+        # Promotion check and choice
         if self.location[0] == 0 or self.location[0] == self.board.size-1:
             if not unredo:
                 print("Pawn promotion!")

@@ -138,6 +138,8 @@ class Board:
 
         old_cell = self.active_piece.cell
         taken_piece = cell.piece
+        move_made = [cell.location[0] - self.active_piece.location[0], cell.location[1] - self.active_piece.location[1]]
+
         self.active_piece.move(cell)
 
         # If the move put the player in check, undo and abort
@@ -149,6 +151,14 @@ class Board:
             return
 
         self.move_history.append([[self.active_piece, old_cell]])
+
+        # Check for en passent, put taken pawn in history and update its square
+        if taken_piece == None and self.active_piece.name["w"]=="♙" and move_made in self.active_piece.takes:
+            taken_piece = self.cells[cell.location[0] - self.active_piece.orig_movements[0][0]][cell.location[1]].piece
+            self.move_history[-1].append([taken_piece, taken_piece.cell])
+            taken_piece.cell.piece = None
+            taken_piece.cell.update_entry()
+            taken_piece = None
 
         # If this piece is a king and we are moving two squares,
         # move the rook as well, and add both to move history
