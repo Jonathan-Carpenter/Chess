@@ -7,8 +7,8 @@
 # piece's colour, and the location it should move to.
 setups = ({
     "checkmate1": ([
-        {"piece": "♕", "which": 1, "colour": "w", "location": [3,0]},
-        {"piece": "♗", "which": 2, "colour": "w", "location": [4,5]}
+        {"piece": "♕", "which": 1, "colour": "w", "location": [4,2]},
+        {"piece": "♗", "which": 1, "colour": "w", "location": [3,7]}
     ]),
     "check1": ([
         {"piece": "♕", "which": 1, "colour": "w", "location": [5,3]}
