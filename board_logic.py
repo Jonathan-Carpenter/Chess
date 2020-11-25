@@ -140,12 +140,9 @@ class Board:
         taken_piece = cell.piece
         move_made = [cell.location[0] - self.active_piece.location[0], cell.location[1] - self.active_piece.location[1]]
 
-        self.active_piece.move(cell)
-
-        # If the move put the player in check, undo and abort
-        if self.in_check(self.active_player, draw=True):
-            self.active_piece.move(old_cell)
-            self.active_piece.cell.widget["bg"] = self.active_piece.cell.prev_colour
+        if not self.test_move_for_check(cell):
+            self.active_piece.move(cell)
+        else:
             print("You can't make a move that puts your king in check!")
             self.active_piece = None
             return
@@ -200,6 +197,18 @@ class Board:
             else:
                 self.kings[player].cell.widget["bg"] = self.kings[player].cell.orig_colour
         return check
+
+    def test_move_for_check(self, cell, draw=False):
+        old_cell = self.active_piece.cell
+        self.active_piece.move(cell)
+        if self.in_check(self.active_player, draw):
+            self.active_piece.move(old_cell)
+            if draw: self.active_piece.cell.widget["bg"] = self.active_piece.cell.prev_colour
+            return True
+        return False
+
+    def stalemate(self):
+        pass
 
     def checkmate(self, player):
         checkmated = True
