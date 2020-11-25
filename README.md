@@ -10,7 +10,7 @@ Chess game for two human players (move pieces with mouse). The implementation cu
 - Special moves implemented so far (all can be undone and redone!):
     - **castling**, including not being able to castle out of check (select the king, not the rook, to perform this move),
     - **promotion** for pawns which reach the other side of the board (choose new piece by responding in the console),
-    - **en passent**, pawns which move 2 squares may be taken by an enemy pawn as though they had only moved one square. As per chess rules, this only applies during the move immediately after the former pawn moves.
+    - **en passant**, pawns which move 2 squares may be taken by an enemy pawn as though they had only moved one square. As per chess rules, this only applies during the move immediately after the former pawn moves.
 
 TODO:
 - Extend UI so that valid moves are highlighted when a piece is selected -- DONE
