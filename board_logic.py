@@ -142,6 +142,7 @@ class Board:
 
         if not self.test_move_for_check(cell):
             self.active_piece.move(cell)
+            self.paint_valid_locations(orig=True)
         else:
             print("You can't make a move that puts your king in check!")
             self.active_piece = None
@@ -199,16 +200,31 @@ class Board:
         return check
 
     def test_move_for_check(self, cell, draw=False):
+        check = False
         old_cell = self.active_piece.cell
         self.active_piece.move(cell)
-        if self.in_check(self.active_player, draw):
+        if self.in_check(self.active_piece.colour, draw):
             self.active_piece.move(old_cell)
             if draw: self.active_piece.cell.widget["bg"] = self.active_piece.cell.prev_colour
-            return True
-        return False
+            check = True
+        self.active_piece.move(old_cell)
+        return check
 
     def stalemate(self):
-        pass
+        for row in self.cells:
+            for cell in row:
+                self.active_piece = cell.piece
+                moves = cell.piece.get_moves()
+                self.valid_locations = []
+                for move in moves:
+                    self.valid_locations.append([move[0] + cell.location[0], move[1] + cell.location[1]])
+                for loc in self.valid_locations:
+                    dest_cell = self.cells[loc[0]][loc[1]]
+                    if not self.test_move_for_check(dest_cell):
+                        self.active_piece = None
+                        return False
+        self.active_piece = None
+        return True
 
     def checkmate(self, player):
         checkmated = True
@@ -259,6 +275,10 @@ class Board:
         self.in_check(self.active_player, draw=True)
 
     def switch_players(self):
+        if self.stalemate():
+            print("Draw by stalemate!")
+            self.active_player = None
+
         if self.active_player == "w":
             self.active_player = "b"
         else:
