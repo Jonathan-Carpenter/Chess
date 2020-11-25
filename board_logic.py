@@ -55,7 +55,7 @@ class Board:
         r, c = location[0], location[1]
         cell = self.cells[r][c]
 
-        if (r+c)%2 == 0:
+        if (r+c)%2 == 1:
             bg = self.b_square_colour
         else:
             bg = self.w_square_colour
@@ -81,10 +81,10 @@ class Board:
                     if c == 0 or c == self.size-1: cell.piece = Rook(self, cell, colour, [r,c])
                     elif c == 1 or c == self.size-2: cell.piece = Knight(self, cell, colour, [r,c])
                     elif c == 2 or c == self.size-3: cell.piece = Bishop(self, cell, colour, [r,c])
-                    elif c == 3:
+                    elif c == 4:
                         cell.piece = King(self, cell, colour, [r,c])
                         self.kings[colour] = cell.piece
-                    elif c == 4: cell.piece = Queen(self, cell, colour, [r,c])
+                    elif c == 3: cell.piece = Queen(self, cell, colour, [r,c])
                 elif r == 1 or r == self.size-2:
                     cell.piece = Pawn(self, cell, colour, [r,c])
 

@@ -139,19 +139,19 @@ class King(Piece):
             super().get_moves(moves)
             return moves
 
-        rook_sq_piece = self.board.cells[r][c-3].piece
+        rook_sq_piece = self.board.cells[r][c+3].piece
         moved_rook = rook_sq_piece in moved_pieces
-        empty_between = self.board.cells[r][c-1].piece == None and self.board.cells[r][c-2].piece == None
+        empty_between = self.board.cells[r][c+1].piece == None and self.board.cells[r][c+2].piece == None
 
         if (empty_between and rook_sq_piece != None
                 and rook_sq_piece.name["w"] == "♖" and not moved_rook):
             moves.append([0,-2])
 
-        rook_sq_piece = self.board.cells[r][c+4].piece
+        rook_sq_piece = self.board.cells[r][c-4].piece
         moved_rook = rook_sq_piece in moved_pieces
-        empty_between = (self.board.cells[r][c+1].piece == None
-                        and self.board.cells[r][c+2].piece == None
-                        and self.board.cells[r][c+3].piece == None)
+        empty_between = (self.board.cells[r][c-1].piece == None
+                        and self.board.cells[r][c-2].piece == None
+                        and self.board.cells[r][c-3].piece == None)
         if (empty_between and rook_sq_piece != None
                 and rook_sq_piece.name["w"] == "♖" and not moved_rook):
             moves.append([0,2])
