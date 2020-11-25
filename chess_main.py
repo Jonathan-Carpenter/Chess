@@ -10,7 +10,7 @@ parser.add_argument("--setup", type=str, default="play", help="choose starting p
 args = parser.parse_args()
 
 root = tk.Tk()
-board = Board(root, size=8)
+board = Board(root)
 root.bind("z", lambda e: board.unredo_move(mode="undo"))
 root.bind("y", lambda e: board.unredo_move(mode="redo"))
 if args.setup != "play":

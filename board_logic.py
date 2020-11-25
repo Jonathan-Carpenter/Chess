@@ -16,12 +16,12 @@ class Cell:
         self.widget.update()
 
 class Board:
-    def __init__(self, master, size, cell_size=1, font_size=50,
+    def __init__(self, master, cell_size=1, font_size=50,
             font_name="Helvetica", valid_text="·", active_colour="gray80",
             w_square_colour="sandy brown", b_square_colour="saddle brown",
             check_colour="yellow", checkmate_colour="red"):
         self.master = master
-        self.size = size
+        self.size = 8
         self.cell_size = cell_size
         self.font_size = font_size
         self.font_name = font_name
@@ -143,7 +143,7 @@ class Board:
         # If the move put the player in check, undo and abort
         if self.in_check(self.active_player, draw=True):
             self.active_piece.move(old_cell)
-            self.active_piece.cell["bg"] = self.active_piece.cell.prev_colour
+            self.active_piece.cell.widget["bg"] = self.active_piece.cell.prev_colour
             print("You can't make a move that puts your king in check!")
             self.active_piece = None
             return

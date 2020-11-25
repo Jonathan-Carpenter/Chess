@@ -206,3 +206,26 @@ class Pawn(Piece):
 
         super().get_moves(moves, movements)
         return moves
+
+    def move(self, cell, draw=True):
+        super().move(cell, draw)
+        piece_names = {'1': "bishop", '2': "knight", '3': "rook", '4': "queen"}
+        piece_id = 0
+
+        if self.location[0] == 0 or self.location[0] == self.board.size:
+            print("Pawn promotion!")
+            for id in piece_names:
+                print("\t{}. {}".format(id, piece_names[id]))
+            while piece_id not in piece_names:
+                piece_id = input("Enter a number for pawn promotion: ")
+
+        if piece_id == '1':
+            cell.piece = Bishop(self.board, cell, self.board.active_player, cell.location)
+        elif piece_id == '2':
+            cell.piece = Knight(self.board, cell, self.board.active_player, cell.location)
+        elif piece_id == '3':
+            cell.piece = Rook(self.board, cell, self.board.active_player, cell.location)
+        elif piece_id == '4':
+            cell.piece = Queen(self.board, cell, self.board.active_player, cell.location)
+
+        cell.update_entry()

@@ -20,6 +20,10 @@ setups = ({
         {"piece": "♗", "which": 2, "colour": "w", "location": [5,5]},
         {"piece": "♘", "which": 2, "colour": "w", "location": [5,6]},
         {"piece": "♛", "which": 1, "colour": "b", "location": [5,3]}
+    ]),
+    "promotion1": ([
+        {"piece": "♜", "which": 1, "colour": "b", "location": [2,7]},
+        {"piece": "♙", "which": 1, "colour": "w", "location": [1,0]}
     ])
 })
 
