@@ -233,7 +233,7 @@ class Board:
         castling = len(moves)>1 and moves[0][0].colour == moves[1][0].colour
         for i, move in enumerate(moves):
             push_to[-1].append([move[0], move[0].cell])
-            if mode != "redo" or i == 0 or castling: move[0].move(move[1])
+            if mode != "redo" or i == 0 or castling: move[0].move(move[1], unredo=True)
 
         self.in_check(self.active_player, draw=True)
         self.switch_players()

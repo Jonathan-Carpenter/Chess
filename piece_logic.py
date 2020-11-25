@@ -14,7 +14,7 @@ class Piece:
     def __str__(self):
         return self.name[self.colour]
 
-    def move(self, cell, draw=True):
+    def move(self, cell, draw=True, unredo=False):
         # remove piece from current cell, and print
         self.cell.piece = None
         if draw: self.cell.update_entry()
@@ -186,6 +186,7 @@ class Pawn(Piece):
 
         self.is_bounded = True
         self.can_jump = False
+        self.prom_choice = None
         super().__init__(board, cell, self.name, colour, location, self.movements, self.is_bounded, self.can_jump)
 
     def get_moves(self):
@@ -197,9 +198,9 @@ class Pawn(Piece):
         moves = []
         movements = self.movements.copy()
 
-        if self.board.cells[r+1][c].piece != None and [1,0] in movements:
+        if r == self.board.size-1 or (self.board.cells[r+1][c].piece != None and [1,0] in movements):
             movements.remove([1,0])
-        elif self.board.cells[r-1][c].piece != None and [-1,0] in movements:
+        elif r == 0 or (self.board.cells[r-1][c].piece != None and [-1,0] in movements):
             movements.remove([-1,0])
         for move in self.takes:
             if self.is_valid_move(move, is_take=True)[0]: moves.append(move)
@@ -207,25 +208,29 @@ class Pawn(Piece):
         super().get_moves(moves, movements)
         return moves
 
-    def move(self, cell, draw=True):
+    def move(self, cell, draw=True, unredo=False):
         super().move(cell, draw)
         piece_names = {'1': "bishop", '2': "knight", '3': "rook", '4': "queen"}
         piece_id = 0
 
-        if self.location[0] == 0 or self.location[0] == self.board.size:
-            print("Pawn promotion!")
-            for id in piece_names:
-                print("\t{}. {}".format(id, piece_names[id]))
-            while piece_id not in piece_names:
-                piece_id = input("Enter a number for pawn promotion: ")
+        if self.location[0] == 0 or self.location[0] == self.board.size-1:
+            if not unredo:
+                print("Pawn promotion!")
+                for id in piece_names:
+                    print("\t{}. {}".format(id, piece_names[id]))
+                while piece_id not in piece_names:
+                    piece_id = input("Enter a number for pawn promotion: ")
+                self.prom_choice = piece_id
+            else:
+                piece_id = self.prom_choice
 
-        if piece_id == '1':
-            cell.piece = Bishop(self.board, cell, self.board.active_player, cell.location)
-        elif piece_id == '2':
-            cell.piece = Knight(self.board, cell, self.board.active_player, cell.location)
-        elif piece_id == '3':
-            cell.piece = Rook(self.board, cell, self.board.active_player, cell.location)
-        elif piece_id == '4':
-            cell.piece = Queen(self.board, cell, self.board.active_player, cell.location)
+            if piece_id == '1':
+                cell.piece = Bishop(self.board, cell, self.board.active_player, cell.location)
+            elif piece_id == '2':
+                cell.piece = Knight(self.board, cell, self.board.active_player, cell.location)
+            elif piece_id == '3':
+                cell.piece = Rook(self.board, cell, self.board.active_player, cell.location)
+            elif piece_id == '4':
+                cell.piece = Queen(self.board, cell, self.board.active_player, cell.location)
 
-        cell.update_entry()
+            cell.update_entry()
