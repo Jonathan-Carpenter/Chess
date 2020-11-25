@@ -17,5 +17,3 @@ TODO:
 - Implement castling and en passant -- DONE
 - Implement promotion -- DONE
 - Implement check and checkmate, incl. can't move into check -- DONE
-- Implement stalemate
-- Design AI opponent
