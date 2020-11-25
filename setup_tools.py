@@ -18,7 +18,8 @@ setups = ({
         {"piece": "♘", "which": 1, "colour": "w", "location": [5,2]},
         {"piece": "♕", "which": 1, "colour": "w", "location": [5,4]},
         {"piece": "♗", "which": 2, "colour": "w", "location": [5,5]},
-        {"piece": "♘", "which": 2, "colour": "w", "location": [5,6]}
+        {"piece": "♘", "which": 2, "colour": "w", "location": [5,6]},
+        {"piece": "♛", "which": 1, "colour": "b", "location": [5,3]}
     ])
 })
 
