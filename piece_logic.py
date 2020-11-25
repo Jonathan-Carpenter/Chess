@@ -135,13 +135,13 @@ class King(Piece):
         moved_pieces = [move[0] for move_set in self.board.move_history for move in move_set]
 
         moved_king = self in moved_pieces
-        rook_sq_piece = self.board.cells[r][c-3].piece
-        moved_rook = rook_sq_piece in moved_pieces
-        empty_between = self.board.cells[r][c-1].piece == None and self.board.cells[r][c-2].piece == None
-
         if moved_king or (self.board.active_player == self.colour and self.is_threatened()[0]):
             super().get_moves(moves)
             return moves
+
+        rook_sq_piece = self.board.cells[r][c-3].piece
+        moved_rook = rook_sq_piece in moved_pieces
+        empty_between = self.board.cells[r][c-1].piece == None and self.board.cells[r][c-2].piece == None
 
         if (empty_between and rook_sq_piece != None
                 and rook_sq_piece.name["w"] == "♖" and not moved_rook):
