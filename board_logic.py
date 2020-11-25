@@ -149,6 +149,15 @@ class Board:
             return
 
         self.move_history.append([[self.active_piece, old_cell]])
+
+        # If this piece is a king and we are moving two squares,
+        # move the rook as well, and add both to move history
+        if self.active_piece == self.kings[self.active_player]:
+            if cell.location[1] - old_cell.location[1] > 1:
+                self.move_rook(2, self.cells[cell.location[0]][cell.location[1]-1])
+            elif cell.location[1] - old_cell.location[1] < -1:
+                self.move_rook(1, self.cells[cell.location[0]][cell.location[1]+1])
+
         if taken_piece != None: self.move_history[-1].append([taken_piece, cell])
         self.move_future = []
         self.active_piece = None
@@ -163,6 +172,15 @@ class Board:
             win_msg += "wins by checkmate!"
             print(win_msg)
             self.active_player = None
+
+    def move_rook(self, which, cell):
+        for r in self.cells:
+            for c in r:
+                if c.piece != None and c.piece.name["w"] == "♖" and c.piece.colour == self.active_player:
+                    which -= 1
+                    if which == 0:
+                        self.move_history[-1].append([c.piece, c])
+                        c.piece.move(cell)
 
     def in_check(self, player, draw=False):
         check = self.kings[player].is_threatened()[0]
@@ -212,9 +230,10 @@ class Board:
 
         moves = pop_from.pop()
         push_to.append([])
+        castling = len(moves)>1 and moves[0][0].colour == moves[1][0].colour
         for i, move in enumerate(moves):
             push_to[-1].append([move[0], move[0].cell])
-            if mode != "redo" or i == 0: move[0].move(move[1])
+            if mode != "redo" or i == 0 or castling: move[0].move(move[1])
 
         self.in_check(self.active_player, draw=True)
         self.switch_players()

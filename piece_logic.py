@@ -127,6 +127,38 @@ class King(Piece):
         self.can_jump = False
         super().__init__(board, cell, self.name, colour, location, self.movements, self.is_bounded, self.can_jump)
 
+    def get_moves(self):
+        r, c = self.location[0], self.location[1]
+
+        moves = []
+
+        moved_pieces = [move[0] for move_set in self.board.move_history for move in move_set]
+
+        moved_king = self in moved_pieces
+        rook_sq_piece = self.board.cells[r][c-3].piece
+        moved_rook = rook_sq_piece in moved_pieces
+        empty_between = self.board.cells[r][c-1].piece == None and self.board.cells[r][c-2].piece == None
+
+        if moved_king:
+            super().get_moves(moves)
+            return moves
+
+        if (not moved_king and empty_between and rook_sq_piece != None
+                and rook_sq_piece.name["w"] == "♖" and not moved_rook):
+            moves.append([0,-2])
+
+        rook_sq_piece = self.board.cells[r][c+4].piece
+        moved_rook = rook_sq_piece in moved_pieces
+        empty_between = (self.board.cells[r][c+1].piece == None
+                        and self.board.cells[r][c+2].piece == None
+                        and self.board.cells[r][c+3].piece == None)
+        if (not moved_king and empty_between and rook_sq_piece != None
+                and rook_sq_piece.name["w"] == "♖" and not moved_rook):
+            moves.append([0,2])
+
+        super().get_moves(moves)
+        return moves
+
 class Queen(Piece):
     def __init__(self, board, cell, colour, location):
         self.name = {"w": "♕", "b": "♛"}

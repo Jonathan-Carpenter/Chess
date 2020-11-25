@@ -10,6 +10,6 @@ Chess game for two human players (move pieces with mouse). The implementation cu
 
 TODO:
 - Extend UI so that valid moves are highlighted when a piece is selected -- DONE
-- Implement en passant and castling
+- Implement en passant (and castling -- DONE)
 - Implement check and checkmate, incl. can't move into check -- DONE
 - Design AI opponent

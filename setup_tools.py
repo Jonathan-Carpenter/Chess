@@ -12,6 +12,13 @@ setups = ({
     ]),
     "check1": ([
         {"piece": "♕", "which": 1, "colour": "w", "location": [5,3]}
+    ]),
+    "castle1": ([
+        {"piece": "♗", "which": 1, "colour": "w", "location": [5,1]},
+        {"piece": "♘", "which": 1, "colour": "w", "location": [5,2]},
+        {"piece": "♕", "which": 1, "colour": "w", "location": [5,4]},
+        {"piece": "♗", "which": 2, "colour": "w", "location": [5,5]},
+        {"piece": "♘", "which": 2, "colour": "w", "location": [5,6]}
     ])
 })
 
