@@ -1,5 +1,7 @@
 # tkinter Chess Game
 
+Download source and run `chess_main.py` to play.
+
 Chess game for two human players (move pieces with mouse). The implementation currently includes the following:
 - Players take turns, only being able to move their own pieces.
 - Selecting a piece highlights that square and displays the possible moves.
